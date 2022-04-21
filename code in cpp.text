@@ -1,0 +1,123 @@
+/* Problem Statement: GAS/SMOKE sensor detect the gas/ smoke
+and gives values between 85 to 376 and we set threshold of 140.
+Measn when ever there is a smoke intensity more than 140 the two 
+water pump will start and we attched the
+
+******CODE & CIRCUIT BY LAMBODAR*******
+
+*/
+
+
+#include<Servo.h>
+
+int signal_pin = A0; //signal pin of mq-2 sensor
+int signal_data; //variable for incoming data
+
+int buzzer = 8;
+int pump1= 2; 
+int pump2= 3;
+int servo= 9;
+
+int greenLED=13;
+int yellowLED=12;
+int redLED=11;
+
+Servo Myservo;
+int pos;
+
+void setup(){
+  
+    pinMode(greenLED, OUTPUT);
+    pinMode(yellowLED, OUTPUT);
+    pinMode(redLED, OUTPUT);
+    pinMode(buzzer, OUTPUT);
+
+
+  
+  Serial.begin(9600);
+  pinMode(signal_pin, INPUT); // setup read data pin
+  
+  pinMode(pump1, OUTPUT); // relay of water pump1
+  pinMode(pump2, OUTPUT); //relay of water pump2
+  
+  Myservo.attach(6); //assign sevor motor 
+}
+
+void loop(){
+  signal_data= analogRead(signal_pin); //reading data 
+  Serial.println(signal_data);
+     
+    if(signal_data>=85 && signal_data<100  ){
+      digitalWrite(greenLED, HIGH);
+      Serial.println("Normal smoke,flame detected!!");
+      Serial.println("val between 85 to 100!!");
+      Serial.println("Green LED ON !!");
+      Serial.println(" ");
+
+      
+    }
+  else{ digitalWrite(greenLED, LOW);
+  }
+    
+     
+  
+     if(signal_data>101 && signal_data<139  ){
+      digitalWrite(yellowLED, HIGH);
+      Serial.println("MODERATE smoke,flame detected!!");
+      Serial.println("val between 101 to 139!!");
+      Serial.println("Yellow LED ON !!");
+      Serial.println(" ");
+
+    }
+  
+  else{
+      digitalWrite(yellowLED, LOW);
+
+  }
+     
+    if(signal_data > 140  ){
+      digitalWrite(redLED, HIGH);
+      Serial.println("HIGH smoke,flame detected!!");
+      Serial.println("val greater than 140!!");
+      Serial.println("RED LED ON !!");
+      Serial.println("SOS...SOS...SOS ");
+      Serial.println(" ");
+
+
+    }
+  else{digitalWrite(redLED, LOW);
+
+  }
+    delay(900);
+
+     
+      
+    if (signal_data>140){
+
+    digitalWrite(buzzer, HIGH);
+    digitalWrite(pump1, HIGH);
+    digitalWrite(pump2, HIGH);
+     
+     
+      for(pos=0;pos<=180;pos++){
+      Myservo.write(pos);
+      delay(15);
+      }
+      delay(50);
+  
+      for(pos=180;pos>=0;pos--){
+      Myservo.write(pos);
+      delay(15);
+      }
+      delay(50);
+      }
+  
+  
+  else {
+    digitalWrite(buzzer, LOW);
+    digitalWrite(pump1, LOW);
+    digitalWrite(pump2, LOW);
+   
+  }
+ 
+}
